@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Management Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Libre Baskerville', serif;
+            margin: 0;
+            background: #f5f7fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-left img {
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .header-left .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .header-right {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-left: auto;
+            padding-right: 50px;
+        }
+
+        .main-container {
+            display: flex;
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            font-family: 'Libre Baskerville', serif;
+            width: 350px;
+            background: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .tab {
+            padding: 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease;
+            color: #333;
+        }
+
+        .tab:hover {
+            background: #f0f0f0;
+        }
+
+        .tab.active {
+            background: #000;
+            color: #fff;
+        }
+
+        .content {
+            font-family: 'Libre Baskerville', serif;
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .section {
+            font-family: 'Libre Baskerville', serif;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .user-management-header,
+        .cruise-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-user-btn,
+        .add-cruise-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .add-user-btn:hover,
+        .add-cruise-btn:hover {
+            background: #333;
+        }
+
+        h3 {
+            font-family: 'Manrope', sans-serif;
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        table th, table td {
+            border-bottom: 1px solid #eee;
+            padding: 12px 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        table th {
+            background: #f7f7f7;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-overlay, .passenger-modal-overlay, .add-cruise-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right:0; bottom:0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
+        }
+
+        .modal, .passenger-modal, .add-cruise-modal {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h4, .passenger-modal h4, .add-cruise-modal h4 {
+            margin-top: 0;
+            font-family: 'Manrope', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .modal input[type="text"],
+        .modal input[type="password"],
+        .add-cruise-modal input[type="text"],
+        .add-cruise-modal input[type="number"],
+        .add-cruise-modal input[type="double"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border:1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .modal button, .passenger-modal button, .add-cruise-modal button {
+            font-family: 'Manrope', sans-serif;
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal button:hover, .passenger-modal button:hover, .add-cruise-modal button:hover {
+            background: #333;
+        }
+
+        .modal .close-btn, .passenger-modal .close-btn, .add-cruise-modal .close-btn {
+            background: #f0f0f0;
+            color: #000;
+            margin-left: 10px;
+        }
+
+        .message {
+            font-size: 14px;
+            color: red;
+            margin-top: 5px;
+        }
+
+        .passenger-list {
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .passenger-list li {
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .passenger-list li strong {
+            font-weight: 700;
+        }
+        /**/
+        .trip-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-trip-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .add-trip-btn:hover {
+            background: #333;
+        }
+        /**/
+        .form-section-title {
+            font-family: 'Manrope', sans-serif;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .add-button {
+            background: #666;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .add-button:hover {
+            background: #444;
+        }
+
+        .item-block {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .password-eye {
+            width: 16px;
+            height: 16px;
+        }
+
+        select.restaurant-type,
+        select.stateroom-type,
+        select.stateroom-position,
+        select.ent-type {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        select.restaurant-type:focus,
+        select.stateroom-type:focus,
+        select.stateroom-position:focus,
+        select.ent-type:focus {
+            outline: none;
+            border-color: #aaa;
+        }
+
+
+
+        .logout-btn {
+            font-family: 'Manrope', sans-serif;
+            display: inline-block;
+            background: #000000;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .logout-btn:hover {
+            background: #717171;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-left">
+        <img src="/images/logo.png" alt="Logo">
+        <div class="company-name">Nature International Cruise Excellence</div>
+    </div>
+    <div class="header-right">
+        Welcome, administrator
+        <a class="logout-btn" id="logoutBtn">Logout</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <div class="tab active" data-target="user-management">User Management</div>
+        <div class="tab" data-target="trip-management">Trip Management</div>
+        <div class="tab" data-target="cruise-management">Cruise Management</div>
+    </div>
+
+    <div class="content">
+        <div class="section active" id="user-management">
+            <div class="user-management-header">
+                <h3>User Management</h3>
+                <button class="add-user-btn">Add User</button>
+            </div>
+            <div class="table-container">
+                <table id="user-table">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Membership</th>
+                    </tr>
+                    </thead>
+                    <tbody id="user-tbody">
+                    <!-- Dynamic Load -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section" id="trip-management">
+            <div class="trip-management-header">
+                <h3>Trip Management</h3>
+                <button class="add-trip-btn">Add Trip</button>
+            </div>
+            <div class="table-container">
+                <table id="trip-table">
+                    <thead>
+                    <tr>
+                        <th>Trip ID</th>
+                        <th>Route</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                    </thead>
+                    <tbody id="trip-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="trip-detail-container" style="display:none; margin-top:20px; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+            <h3>Trip Detail</h3>
+            <div id="trip-detail-content"></div>
+        </div>
+        <div class="section" id="cruise-management">
+            <div class="cruise-management-header">
+                <h3>Cruise Management</h3>
+                <button class="add-cruise-btn">Add Cruise</button>
+            </div>
+            <div class="table-container">
+                <table id="cruise-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cruise Name</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cruise-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="add-user-modal-overlay">
+    <div class="modal">
+        <h4>Add User</h4>
+        <input type="text" id="new-username" placeholder="Username" required>
+        <input type="password" id="new-password" placeholder="Password" required>
+        <div class="message" id="modal-message"></div>
+        <div style="margin-top:10px;">
+            <button id="submit-user-btn">Submit</button>
+            <button class="close-btn" id="close-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="add-trip-modal-overlay">
+    <div class="modal">
+        <h4>Add Trip</h4>
+
+        <div class="form-section-title">Cruise</div>
+        <select id="select-cruise" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+            <option value="">Select Cruise</option>
+        </select>
+
+        <div class="form-section-title">Start Port</div>
+        <select id="select-start-port" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+            <option value="">Select Start Port</option>
+        </select>
+        <input type="text" id="start-port-start-time" placeholder="Start Time (e.g. 2024-01-01T06:00:00)" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+        <input type="text" id="start-port-end-time" placeholder="End Time (e.g. 2024-01-01T22:00:00)" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+
+        <div class="form-section-title">End Port</div>
+        <select id="select-end-port" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+            <option value="">Select End Port</option>
+        </select>
+        <input type="text" id="end-port-start-time" placeholder="Start Time (e.g. 2024-01-07T06:00:00)" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+        <input type="text" id="end-port-end-time" placeholder="End Time (e.g. 2024-01-07T22:00:00)" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+
+        <div class="form-section-title">Stop Ports</div>
+        <div id="stop-ports-container"></div>
+        <button class="add-button" id="add-stop-port-btn">Add Stop Port</button>
+
+        <div class="message" id="trip-modal-message"></div>
+        <div style="margin-top:10px;">
+            <button id="submit-trip-btn">Submit</button>
+            <button class="close-btn" id="close-trip-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="passenger-modal-overlay" id="passenger-modal-overlay">
+    <div class="passenger-modal">
+        <h4>Passengers</h4>
+        <ul class="passenger-list" id="passenger-list">
+        </ul>
+        <div style="margin-top:10px;">
+            <button class="close-btn" id="close-passenger-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="add-cruise-modal-overlay" id="add-cruise-modal-overlay">
+    <div class="add-cruise-modal">
+        <h4>Add Cruise</h4>
+        <input type="text" id="cruise-input-name" placeholder="Cruise Name" required>
+
+        <div class="form-section-title">Restaurants</div>
+        <div id="restaurants-container"></div>
+        <button class="add-button" id="add-restaurant-btn">Add Another Restaurant</button>
+
+        <div class="form-section-title">Staterooms</div>
+        <div id="staterooms-container"></div>
+        <button class="add-button" id="add-stateroom-btn">Add Another Stateroom</button>
+
+        <div class="form-section-title">Entertainment</div>
+        <div id="entertainments-container"></div>
+        <button class="add-button" id="add-entertainment-btn">Add Another Entertainment</button>
+
+        <div class="message" id="cruise-modal-message"></div>
+        <div style="margin-top:10px;">
+            <button id="submit-cruise-btn">Submit</button>
+            <button class="close-btn" id="close-cruise-modal-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('loggedInUserId');
+        window.location.href = 'login.html';
+    });
+
+    function addRestaurantBlock() {
+        const div = document.createElement('div');
+        div.classList.add('item-block');
+        div.innerHTML = `
+            <select class="restaurant-type">
+                <option value="">Select Restaurant Type</option>
+                <option value="Common Buffett">Common Buffett</option>
+                <option value="Italian Specialty">Italian Specialty</option>
+                <option value="La carte continental">La carte continental</option>
+                <option value="Mexican Specialty">Mexican Specialty</option>
+                <option value="Ming Work Chinese">Ming Work Chinese</option>
+                <option value="Pool Bar">Pool Bar</option>
+                <option value="Round Clock Cafe">Round Clock Cafe</option>
+                <option value="Stout Bar">Stout Bar</option>
+                <option value="Tokyo Ramen Japanese">Tokyo Ramen Japanese</option>
+            </select>
+            <input type="text" class="restaurant-start" placeholder="Start Time (e.g. 2024-01-01T06:00:00)">
+            <input type="text" class="restaurant-end" placeholder="End Time (e.g. 2024-01-01T22:00:00)">
+            <input type="number" class="restaurant-floor" placeholder="Floor">
+        `;
+        document.getElementById('restaurants-container').appendChild(div);
+    }
+
+
+    function addStateroomBlock() {
+        const div = document.createElement('div');
+        div.classList.add('item-block');
+        div.innerHTML = `
+            <select class="stateroom-type">
+                <option value="">Select Stateroom Type</option>
+                <option value="club balcony suite">club balcony suite</option>
+                <option value="family balcony">family balcony</option>
+                <option value="family large balcony">family large balcony</option>
+                <option value="inside stateroom">inside stateroom</option>
+                <option value="oceanview window">oceanview window</option>
+                <option value="studio stateroom">studio stateroom</option>
+                <option value="the haven suite">the haven suite</option>
+            </select>
+            <input type="number" class="stateroom-size" placeholder="Size">
+            <input type="number" class="stateroom-bed" placeholder="Bed Number">
+            <input type="number" class="stateroom-bathroom" placeholder="Bathroom Number">
+            <input type="number" class="stateroom-balcony" placeholder="Balcony (0 or 1)">
+            <input type="number" step="0.01" class="stateroom-price" placeholder="Price per person">
+            <select class="stateroom-position">
+                <option value="">Select Position</option>
+                <option value="After">After</option>
+                <option value="Forward">Forward</option>
+                <option value="Left">Left</option>
+                <option value="Right">Right</option>
+            </select>
+        `;
+        document.getElementById('staterooms-container').appendChild(div);
+    }
+
+    function addEntertainmentBlock() {
+        const div = document.createElement('div');
+        div.classList.add('item-block');
+        div.innerHTML = `
+            <select class="ent-type">
+                <option value="">Select Entertainment Type</option>
+                <option value="casino">casino</option>
+                <option value="children play">children play</option>
+                <option value="gym">gym</option>
+                <option value="indoor pool">indoor pool</option>
+                <option value="library">library</option>
+                <option value="night club">night club</option>
+                <option value="outdoor pool">outdoor pool</option>
+                <option value="sona room">sona room</option>
+                <option value="steam room">steam room</option>
+                <option value="tennis court">tennis court</option>
+                <option value="theaters">theaters</option>
+                <option value="whirlpool">whirlpool</option>
+                <option value="yoga room">yoga room</option>
+            </select>
+            <input type="number" class="ent-units" placeholder="Units Number">
+            <input type="number" class="ent-floor1" placeholder="Floor 1 (or leave blank)">
+            <input type="number" class="ent-floor2" placeholder="Floor 2 (or blank)">
+            <input type="number" class="ent-floor3" placeholder="Floor 3 (or blank)">
+            <input type="number" class="ent-age" placeholder="Age limits">
+        `;
+        document.getElementById('entertainments-container').appendChild(div);
+    }
+
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('.section');
+
+    // Tabs switching
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const targetId = tab.getAttribute('data-target');
+
+            sections.forEach(sec => {
+                sec.classList.remove('active');
+                if(sec.id === targetId) {
+                    sec.classList.add('active');
+                }
+            });
+
+            // If it's cruise-management tab, load cruises
+            if(targetId === 'cruise-management') {
+                loadCruises();
+            }
+            if(targetId === 'trip-management'){
+                loadTrips();
+            }
+        });
+    });
+
+    async function loadCruises() {
+        const cruiseTbody = document.getElementById('cruise-tbody');
+        cruiseTbody.innerHTML = '';
+        try {
+            const res = await fetch('/api/cruise/getall');
+            const data = await res.json();
+            let index = 1;
+            data.forEach(name => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index++}</td>
+                    <td>${name}</td>
+                `;
+                cruiseTbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error('Error fetching cruise data', err);
+        }
+    }
+
+    // Add Cruise Modal
+    const addCruiseBtn = document.querySelector('.add-cruise-btn');
+    const addCruiseModalOverlay = document.getElementById('add-cruise-modal-overlay');
+    const closeCruiseModalBtn = document.getElementById('close-cruise-modal-btn');
+    const submitCruiseBtn = document.getElementById('submit-cruise-btn');
+    const cruiseModalMessage = document.getElementById('cruise-modal-message');
+
+    addCruiseBtn.addEventListener('click', () => {
+        cruiseModalMessage.textContent = '';
+        addCruiseModalOverlay.style.display = 'flex';
+        clearCruiseForm();
+        addRestaurantBlock();
+        addStateroomBlock();
+        addEntertainmentBlock();
+    });
+
+    closeCruiseModalBtn.addEventListener('click', () => {
+        addCruiseModalOverlay.style.display = 'none';
+    });
+
+    // Dynamic add restaurant
+    const restaurantsContainer = document.getElementById('restaurants-container');
+    const addRestaurantBtn = document.getElementById('add-restaurant-btn');
+    addRestaurantBtn.addEventListener('click', () => {
+        addRestaurantBlock();
+    });
+
+
+    // Dynamic add stateroom
+    const stateroomsContainer = document.getElementById('staterooms-container');
+    const addStateroomBtn = document.getElementById('add-stateroom-btn');
+    addStateroomBtn.addEventListener('click', () => {
+        addStateroomBlock();
+    });
+
+
+    // Dynamic add entertainment
+    const entertainmentsContainer = document.getElementById('entertainments-container');
+    const addEntertainmentBtn = document.getElementById('add-entertainment-btn');
+    addEntertainmentBtn.addEventListener('click', () => {
+        addEntertainmentBlock();
+    });
+
+
+    function clearCruiseForm() {
+        document.getElementById('cruise-input-name').value = '';
+        restaurantsContainer.innerHTML = '';
+        stateroomsContainer.innerHTML = '';
+        entertainmentsContainer.innerHTML = '';
+    }
+
+    submitCruiseBtn.addEventListener('click', async () => {
+        const cruiseName = document.getElementById('cruise-input-name').value.trim();
+        if(!cruiseName) {
+            cruiseModalMessage.style.color = 'red';
+            cruiseModalMessage.textContent = 'Cruise Name is required.';
+            return;
+        }
+
+        const payload = {
+            "cruise_name": cruiseName,
+            "restaurants": [],
+            "staterooms": [],
+            "entertainment": []
+        };
+
+        // Collect restaurants
+        const restaurantBlocks = restaurantsContainer.querySelectorAll('.item-block');
+        restaurantBlocks.forEach(block => {
+            const rType = block.querySelector('.restaurant-type').value.trim();
+            const rStart = block.querySelector('.restaurant-start').value.trim();
+            const rEnd = block.querySelector('.restaurant-end').value.trim();
+            const rFloor = block.querySelector('.restaurant-floor').value.trim();
+            if(rType && rStart && rEnd && rFloor) {
+                payload.restaurants.push({
+                    "type": rType,
+                    "start_time": rStart,
+                    "end_time": rEnd,
+                    "floor": parseInt(rFloor)
+                });
+            }
+        });
+
+        // Collect staterooms
+        const stateroomBlocks = stateroomsContainer.querySelectorAll('.item-block');
+        stateroomBlocks.forEach(block => {
+            const sType = block.querySelector('.stateroom-type').value.trim();
+            const sSize = block.querySelector('.stateroom-size').value.trim();
+            const sBed = block.querySelector('.stateroom-bed').value.trim();
+            const sBath = block.querySelector('.stateroom-bathroom').value.trim();
+            const sBal = block.querySelector('.stateroom-balcony').value.trim();
+            const sPrice = block.querySelector('.stateroom-price').value.trim();
+            const sPos = block.querySelector('.stateroom-position').value.trim();
+
+            if(sType && sSize && sBed && sBath && sBal && sPrice && sPos) {
+                payload.staterooms.push({
+                    "type": sType,
+                    "size": parseInt(sSize),
+                    "bed_num": parseInt(sBed),
+                    "bathroom_num": parseInt(sBath),
+                    "balcony": parseInt(sBal),
+                    "price_per_person": parseFloat(sPrice),
+                    "position": sPos
+                });
+            }
+        });
+
+        // Collect entertainment
+        const entBlocks = entertainmentsContainer.querySelectorAll('.item-block');
+        entBlocks.forEach(block => {
+            const eType = block.querySelector('.ent-type').value.trim();
+            const eUnits = block.querySelector('.ent-units').value.trim();
+            const eF1 = block.querySelector('.ent-floor1').value.trim();
+            const eF2 = block.querySelector('.ent-floor2').value.trim();
+            const eF3 = block.querySelector('.ent-floor3').value.trim();
+            const eAge = block.querySelector('.ent-age').value.trim();
+
+            if(eType && eUnits && eAge) {
+                const floor_1 = eF1 ? parseInt(eF1) : null;
+                const floor_2 = eF2 ? parseInt(eF2) : null;
+                const floor_3 = eF3 ? parseInt(eF3) : null;
+
+                payload.entertainment.push({
+                    "type": eType,
+                    "units_num": parseInt(eUnits),
+                    "floor_1": floor_1,
+                    "floor_2": floor_2,
+                    "floor_3": floor_3,
+                    "age_limits": parseInt(eAge)
+                });
+            }
+        });
+
+        const res = await fetch('/api/cruise/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        if(text === 'Add Cruise Success') {
+            cruiseModalMessage.style.color = 'green';
+            cruiseModalMessage.textContent = 'Cruise added successfully!';
+            // Reload cruises
+            loadCruises();
+            // Close modal after short delay
+            setTimeout(() => {
+                addCruiseModalOverlay.style.display = 'none';
+            }, 1000);
+        } else {
+            cruiseModalMessage.style.color = 'red';
+            cruiseModalMessage.textContent = text;
+        }
+    });
+
+    const userTableBody = document.getElementById('user-tbody');
+
+    const addUserModalOverlay = document.getElementById('add-user-modal-overlay');
+    const addUserBtn = document.querySelector('.add-user-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const submitUserBtn = document.getElementById('submit-user-btn');
+    const modalMessage = document.getElementById('modal-message');
+    const newUsernameInput = document.getElementById('new-username');
+    const newPasswordInput = document.getElementById('new-password');
+
+    const passengerModalOverlay = document.getElementById('passenger-modal-overlay');
+    const passengerList = document.getElementById('passenger-list');
+    const closePassengerModalBtn = document.getElementById('close-passenger-modal-btn');
+
+
+    async function loadUserData() {
+        userTableBody.innerHTML = '';
+        try {
+            const res = await fetch('/api/user/getall');
+            const data = await res.json();
+            const maskedPassword = '**********';
+            data.forEach(user => {
+                const tr = document.createElement('tr');
+
+                tr.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td class="password-cell">
+                        <span class="password-text">${maskedPassword}</span>
+                        <img src="/images/eyes_icon.png" alt="Show/Hide Password" class="password-eye" data-password="${user.password}">
+                    </td>
+                    <td>${user.membership}</td>
+                `;
+
+                tr.addEventListener('click', (e) => {
+                    if(e.target.classList.contains('password-eye')) {
+                        return;
+                    }
+                    loadPassengerData(user.id);
+                });
+
+                const passwordEye = tr.querySelector('.password-eye');
+                const passwordTextSpan = tr.querySelector('.password-text');
+
+                passwordEye.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentText = passwordTextSpan.textContent;
+                    if(currentText === maskedPassword) {
+                        passwordTextSpan.textContent = passwordEye.getAttribute('data-password');
+                    } else {
+                        passwordTextSpan.textContent = maskedPassword;
+                    }
+                });
+
+                userTableBody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error('Error fetching user data', err);
+        }
+    }
+
+    async function loadPassengerData(userId) {
+        passengerList.innerHTML = '';
+        try {
+            const res = await fetch('/api/passenger/user/' + userId);
+            const passengers = await res.json();
+            if(passengers && passengers.length > 0) {
+                passengers.forEach(p => {
+                    const li = document.createElement('li');
+                    let fullName = p.fname;
+                    if(p.mname && p.mname.trim() !== '') {
+                        fullName += ' ' + p.mname;
+                    }
+                    fullName += ' ' + p.lname;
+
+                    const birthDateOnly = p.birthDate ? p.birthDate.split('T')[0] : '';
+
+                    li.innerHTML = `
+                        <strong>${fullName}</strong><br>
+                        Email: ${p.email}<br>
+                        Phone: ${p.phone}<br>
+                        Birth: ${birthDateOnly}<br>
+                        Country: ${p.addressCountry}
+                    `;
+
+                    passengerList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No passengers found for this user.';
+                passengerList.appendChild(li);
+            }
+
+            passengerModalOverlay.style.display = 'flex';
+        } catch (err) {
+            console.error('Error fetching passenger data', err);
+        }
+    }
+    async function loadTrips() {
+        const tripTbody = document.getElementById('trip-tbody');
+        tripTbody.innerHTML = '';
+        try {
+            const res = await fetch('/api/trip/getall');
+            const data = await res.json();
+            data.forEach(trip => {
+                const startDate = trip.startPort ? trip.startPort.startDate : '';
+                const endDate = trip.endPort ? trip.endPort.endDate : '';
+                let route = '';
+                if (trip.startPort && trip.endPort) {
+                    route = `From ${trip.startPort.portName} (${trip.startPort.startDate}) to ${trip.endPort.portName} (${trip.endPort.endDate})`;
+                } else {
+                    return;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td>${trip.tripId}</td>
+                <td>${route}</td>
+                <td>${startDate}</td>
+                <td>${endDate}</td>
+            `;
+
+                tr.addEventListener('click', () => {
+                    showTripDetail(trip, tr);
+                });
+
+                tripTbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error('Error fetching trip data', err);
+        }
+    }
+
+    function showTripDetail(trip, clickedTr) {
+        if (clickedTr.nextElementSibling && clickedTr.nextElementSibling.classList.contains('trip-detail-row')) {
+            clickedTr.nextElementSibling.remove();
+            return;
+        }
+
+        const cruiseName = trip.cruiseName ? trip.cruiseName : 'Unknown Cruise';
+        let itinerary = '';
+        if (trip.startPort && trip.endPort) {
+            itinerary = `From ${trip.startPort.portName} (${trip.startPort.startDate}) to ${trip.endPort.portName} (${trip.endPort.endDate})`;
+        } else {
+            itinerary = 'Itinerary not available';
+        }
+
+        let stopsHtml = '';
+        if (trip.stopPort && trip.stopPort.length > 0) {
+            stopsHtml = '<ul>';
+            trip.stopPort.forEach(sp => {
+                stopsHtml += `<li>${sp.portName}: Arrive at ${sp.startDate}, Depart at ${sp.endDate}</li>`;
+            });
+            stopsHtml += '</ul>';
+        } else {
+            stopsHtml = '<p>No intermediate stops.</p>';
+        }
+
+        const detailHtml = `
+        <p><strong>Cruise Name:</strong> ${cruiseName}</p>
+        <p><strong>Itinerary:</strong> ${itinerary}</p>
+        <p><strong>Intermediate Stops:</strong></p>
+        ${stopsHtml}
+    `;
+
+        const detailRow = document.createElement('tr');
+        detailRow.classList.add('trip-detail-row');
+        detailRow.innerHTML = `
+        <td colspan="4" style="background:#f9f9f9; padding:20px; border-top:2px solid #ddd; border-bottom:1px solid #eee;">
+            ${detailHtml}
+        </td>
+        `;
+
+        clickedTr.insertAdjacentElement('afterend', detailRow);
+    }
+
+    loadUserData();
+
+
+    addUserBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalMessage.textContent = '';
+        modalMessage.style.color = 'red';
+        newUsernameInput.value = '';
+        newPasswordInput.value = '';
+        addUserModalOverlay.style.display = 'flex';
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        addUserModalOverlay.style.display = 'none';
+    });
+
+    closePassengerModalBtn.addEventListener('click', () => {
+        passengerModalOverlay.style.display = 'none';
+    });
+
+    submitUserBtn.addEventListener('click', async () => {
+        const username = newUsernameInput.value.trim();
+        const password = newPasswordInput.value.trim();
+        if(!username || !password) {
+            modalMessage.textContent = 'Username or password cannot be empty';
+            modalMessage.style.color = 'red';
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+            body: formData
+        });
+
+        const text = await res.text();
+        if(text === 'Register Success') {
+            modalMessage.style.color = 'green';
+            modalMessage.textContent = 'Register Success';
+            loadUserData();
+            setTimeout(() => {
+                addUserModalOverlay.style.display = 'none';
+            }, 1000);
+        } else {
+            modalMessage.style.color = 'red';
+            modalMessage.textContent = text;
+        }
+    });
+    // This is the trip add part
+    // Add Trip modal controls
+    const addTripBtn = document.querySelector('.add-trip-btn');
+    const addTripModalOverlay = document.getElementById('add-trip-modal-overlay');
+    const closeTripModalBtn = document.getElementById('close-trip-modal-btn');
+    const submitTripBtn = document.getElementById('submit-trip-btn');
+    const tripModalMessage = document.getElementById('trip-modal-message');
+
+    // Cruise and port dropdowns
+    const selectCruise = document.getElementById('select-cruise');
+    const selectStartPort = document.getElementById('select-start-port');
+    const selectEndPort = document.getElementById('select-end-port');
+    const stopPortsContainer = document.getElementById('stop-ports-container');
+    const addStopPortBtn = document.getElementById('add-stop-port-btn');
+
+    // Open Add Trip modal and fetch available cruises and ports
+    addTripBtn.addEventListener('click', async () => {
+        addTripModalOverlay.style.display = 'flex';
+        tripModalMessage.textContent = '';
+
+        try {
+            const res = await fetch('/api/trip/getValidCruisePort');
+            const data = await res.json();
+
+            // Populate cruise dropdown
+            selectCruise.innerHTML = '<option value="">Select Cruise</option>';
+            data.cruises.forEach(cruise => {
+                const option = document.createElement('option');
+                option.value = cruise.cruise_id;
+                option.textContent = cruise.cruise_name;
+                selectCruise.appendChild(option);
+            });
+
+            // Populate port dropdowns
+            selectStartPort.innerHTML = '<option value="">Select Start Port</option>';
+            selectEndPort.innerHTML = '<option value="">Select End Port</option>';
+            data.ports.forEach(port => {
+                const option = document.createElement('option');
+                option.value = port.port_id;
+                option.textContent = port.port_name;
+                selectStartPort.appendChild(option.cloneNode(true));
+                selectEndPort.appendChild(option.cloneNode(true));
+            });
+        } catch (err) {
+            console.error('Error loading cruise and port data:', err);
+        }
+    });
+
+
+    // Add dynamic stop port fields
+    addStopPortBtn.addEventListener('click', () => {
+        const div = document.createElement('div');
+        div.classList.add('item-block');
+        div.innerHTML = `
+        <select class="stop-port" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
+            ${selectStartPort.innerHTML}
+        </select>
+        <input type="text" class="stop-port-start-time" placeholder="Start Time (e.g. 2024-01-02T06:00:00)">
+        <input type="text" class="stop-port-end-time" placeholder="End Time (e.g. 2024-01-02T22:00:00)">
+        <button class="remove-stop-port-btn">Remove</button>
+    `;
+        stopPortsContainer.appendChild(div);
+
+        // Remove stop port
+        div.querySelector('.remove-stop-port-btn').addEventListener('click', () => {
+            div.remove();
+        });
+    });
+
+    // Submit trip data
+    submitTripBtn.addEventListener('click', async () => {
+        const cruiseId = selectCruise.value;
+        const startPortId = selectStartPort.value;
+        const endPortId = selectEndPort.value;
+        const startPortStartTime = document.getElementById('start-port-start-time').value;
+        const startPortEndTime = document.getElementById('start-port-end-time').value;
+        const endPortStartTime = document.getElementById('end-port-start-time').value;
+        const endPortEndTime = document.getElementById('end-port-end-time').value;
+
+        const stopPorts = [];
+        stopPortsContainer.querySelectorAll('.item-block').forEach(block => {
+            const portId = block.querySelector('.stop-port').value;
+            const startTime = block.querySelector('.stop-port-start-time').value;
+            const endTime = block.querySelector('.stop-port-end-time').value;
+            stopPorts.push({ portId, startDate: startTime, endDate: endTime });
+        });
+
+        // Validation
+        if (!cruiseId || !startPortId || !endPortId || !startPortStartTime || !startPortEndTime || !endPortStartTime || !endPortEndTime) {
+            tripModalMessage.textContent = 'All fields are required.';
+            tripModalMessage.style.color = 'red';
+            return;
+        }
+
+        if (new Date(startPortEndTime) >= new Date(endPortStartTime)) {
+            tripModalMessage.textContent = 'Start port end time must be before end port start time.';
+            tripModalMessage.style.color = 'red';
+            return;
+        }
+
+        const portIds = new Set([startPortId, endPortId]);
+        stopPorts.forEach(sp => portIds.add(sp.portId));
+        if (portIds.size !== stopPorts.length + 2) {
+            tripModalMessage.textContent = 'Start, end, and stop ports must be unique.';
+            tripModalMessage.style.color = 'red';
+            return;
+        }
+
+        const payload = {
+            cruiseId,
+            startPort: {
+                portId: startPortId,
+                startDate: startPortStartTime,
+                endDate: startPortEndTime,
+            },
+            endPort: {
+                portId: endPortId,
+                startDate: endPortStartTime,
+                endDate: endPortEndTime,
+            },
+            stopPort: stopPorts,
+        };
+
+        try {
+            const res = await fetch('/api/trip/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+                tripModalMessage.textContent = 'Trip added successfully!';
+                tripModalMessage.style.color = 'green';
+                setTimeout(() => {
+                    addTripModalOverlay.style.display = 'none';
+                    loadTrips();
+                }, 1000);
+            } else {
+                tripModalMessage.textContent = 'Failed to add trip.';
+                tripModalMessage.style.color = 'red';
+            }
+        } catch (err) {
+            console.error('Error adding trip:', err);
+        }
+    });
+
+    // Close modal
+    closeTripModalBtn.addEventListener('click', () => {
+        addTripModalOverlay.style.display = 'none';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Account Detail</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Libre Baskerville', serif;
+            background: #f7f9fc;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 350px;
+            background: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            color: #333;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 12px 20px;
+            color: #555;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #f0f4fb;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            padding: 15px 20px;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .left-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-bar button.back-btn {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .top-bar .title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Logo 和公司名称之间的间距 */
+        }
+        .logo {
+            height: 40px; /* 固定高度 */
+            width: auto; /* 保持宽高比 */
+        }
+        .company-name {
+            font-size: 1rem;
+            color: #333; /* 黑色文字 */
+            font-weight: bold;
+        }
+
+        .content-wrapper {
+            padding: 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .section h2 {
+            font-size: 1.25rem;
+            margin: 0 0 20px 0;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            color: #555;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .form-row input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .form-row input:focus {
+            border-color: #333;
+            outline: none;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #555;
+        }
+
+        .info-row {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:15px;
+        }
+
+        .info-label {
+            color:#555;
+            font-size:1rem;
+            font-weight:500;
+        }
+
+        .info-value {
+            color:#333;
+            font-size:1rem;
+        }
+
+        .form-row input {
+            box-sizing: border-box;
+            padding-right: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-title">Account Center</div>
+    <div class="sidebar-menu">
+        <a href="#" class="menu-item active" data-page="overview">Account Overview</a>
+        <a href="#" class="menu-item" data-page="change-username">Change Username</a>
+        <a href="#" class="menu-item" data-page="change-password">Change Password</a>
+    </div>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="left-content">
+            <button class="back-btn" onclick="window.history.back()">←</button>
+            <div class="title" id="pageTitle">Account Overview</div>
+        </div>
+        <div class="company-info">
+            <img src="/images/logo.png" alt="Company Logo" class="logo">
+            <span class="company-name">Nature International Cruise Excellence</span>
+        </div>
+    </div>
+
+    <!-- Content area -->
+    <div class="content-wrapper" id="contentWrapper">
+        <!-- Default Overview Page -->
+        <div class="section" data-page="overview">
+            <h2>Personal Information</h2>
+            <div class="info-row">
+                <div class="info-label">User Name</div>
+                <div class="info-value" id="usernameDisplay">-</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Membership</div>
+                <div class="info-value" id="membershipDisplay">-</div>
+            </div>
+        </div>
+
+        <div class="section" data-page="overview">
+            <h2>Password</h2>
+            <div class="info-row">
+                <div class="info-label">Password</div>
+                <div class="info-value" id="passwordDisplay">******</div>
+            </div>
+        </div>
+
+        <!-- Change Username Page -->
+        <div class="section" data-page="change-username" style="display: none;">
+            <h2>Change Username</h2>
+            <div class="form-row">
+                <label for="currentUsername">Current Username</label>
+                <input type="text" id="currentUsername" disabled/>
+            </div>
+            <div class="form-row">
+                <label for="newUsername">New Username</label>
+                <input type="text" id="newUsername" />
+            </div>
+            <div class="form-row">
+                <label for="confirmUsername">Confirm Username</label>
+                <input type="text" id="confirmUsername" />
+            </div>
+            <button class="submit-btn" id="submitUsernameChange">Submit</button>
+            <span id="usernameMessage" class="message" style="margin-left: 10px; color: #333;"></span>
+        </div>
+
+        <!-- Change Password Page -->
+        <div class="section" data-page="change-password" style="display: none;">
+            <h2>Change Password</h2>
+            <div class="form-row">
+                <label for="oldPassword">Old Password</label>
+                <input type="password" id="oldPassword" />
+            </div>
+            <div class="form-row">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" />
+            </div>
+            <div class="form-row">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" />
+            </div>
+            <button class="submit-btn" id="submitPasswordChange">Submit</button>
+            <span id="passwordMessage" class="message" style="margin-left: 10px; color: #333;"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let userData = null;
+
+    // Page navigation logic
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.section');
+    const pageTitle = document.getElementById('pageTitle');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = item.dataset.page;
+
+            // Update active menu
+            menuItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            // Show the target sections
+            sections.forEach(section => {
+                if (section.dataset.page === targetPage) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Update page title
+            pageTitle.textContent = item.textContent;
+
+            if (targetPage === 'change-username' && userData) {
+                document.getElementById('currentUsername').value = userData.username || '-';
+            }
+        });
+    });
+
+    const userId = localStorage.getItem('loggedInUserId');
+    if(!userId) {
+        window.location.href = 'login.html';
+    }
+
+    fetch('/api/user/' + userId)
+        .then(response => response.json())
+        .then(data => {
+            userData = data;
+
+            // Display username
+            document.getElementById('usernameDisplay').textContent = userData.username || '-';
+            // Display membership
+            document.getElementById('membershipDisplay').textContent = userData.membership || '-';
+
+            // Mask password
+            const maskedPassword = '*'.repeat(10);
+            document.getElementById('passwordDisplay').textContent = maskedPassword;
+        })
+        .catch(error => {
+            console.error('Error fetching user info:', error);
+        });
+
+
+    document.getElementById('submitUsernameChange').addEventListener('click', () => {
+        const newUsername = document.getElementById('newUsername').value.trim();
+        const confirmUsername = document.getElementById('confirmUsername').value.trim();
+        const messageSpan = document.getElementById('usernameMessage');
+
+        messageSpan.textContent = '';
+
+        if (!newUsername || !confirmUsername) {
+            messageSpan.textContent = 'Please fill out both username fields.';
+            messageSpan.style.color = 'red';
+            return;
+        }
+
+        if (newUsername !== confirmUsername) {
+            messageSpan.textContent = 'Usernames do not match.';
+            messageSpan.style.color = 'red';
+            return;
+        }
+
+        const url = `/api/user/cname?userid=${encodeURIComponent(userId)}&newusername=${encodeURIComponent(newUsername)}`;
+
+        fetch(url, {
+            method: 'POST'
+        })
+            .then(response => response.text())
+            .then(result => {
+
+                messageSpan.textContent = result;
+                messageSpan.style.color = 'green';
+            })
+            .catch(error => {
+                console.error('Error changing username:', error);
+                messageSpan.textContent = 'An error occurred while changing username.';
+                messageSpan.style.color = 'red';
+            });
+    });
+
+
+
+
+    document.getElementById('submitPasswordChange').addEventListener('click', () => {
+        const oldPassword = document.getElementById('oldPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const messageSpan = document.getElementById('passwordMessage');
+
+        messageSpan.textContent = '';
+
+        if (newPassword === confirmPassword) {
+            fetch('/api/user/cpassword', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userid: userId,
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(err => {
+                            throw new Error(err);
+                        });
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('Response:', data);
+                    messageSpan.textContent = data;
+                    messageSpan.style.color = 'green';
+                })
+                .catch(error => {
+                    console.error('Error changing password:', error.message);
+                    messageSpan.textContent = error.message;
+                    messageSpan.style.color = 'red';
+                });
+        } else {
+            messageSpan.textContent = 'Passwords do not match!';
+            messageSpan.style.color = 'red';
+        }
+    });
+</script>
+</body>
+</html>
